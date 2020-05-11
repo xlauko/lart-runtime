@@ -1,2 +1,1 @@
-# lamp-runtime
-LAMP Runtime Support Library
+# LAMP Runtime Support Library
