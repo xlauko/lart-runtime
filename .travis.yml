@@ -12,7 +12,6 @@ compiler:
   - clang
 
 env:
-  - VCPKG_TRIPLET=x64-linux
   - TRAVIS_BUILD_TYPE=Debug
   - TRAVIS_BUILD_TYPE=Release
 
@@ -44,7 +43,6 @@ before_install:
   - if [ "$TRAVIS_OS_NAME" == "linux" ]; then
       if [ "$CXX" = "clang++" ]; then export CXX="clang++-10" CC="clang-10"; fi;
     fi
-
   # Install Catch2
   - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then
       cd "$HOME"
@@ -54,7 +52,6 @@ before_install:
       sudo cmake --build build/ --target install
       cd "$TRAVIS_BUILD_DIR"
     fi
-
   # Coveralls
   - pip install --user cpp-coveralls
   # Print some more system information after installing all build tools
