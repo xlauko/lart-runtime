@@ -1,6 +1,6 @@
 cmake_minimum_required( VERSION 3.15)
 
-project( liblart-runtime CXX )
+project( liblart-runtime LANGUAGES CXX )
 include( cmake/project_settings.cmake )
 
 # Link lart runtime to set the c++ standard / compile-time options requested
@@ -44,9 +44,27 @@ if ( ENABLE_PCH )
   target_precompile_headers( project_options INTERFACE <utility> )
 endif()
 
+# LIBRARY
+add_library( lart-runtime
+  STATIC
+    src/choose.cpp
+)
+
+target_include_directories( lart-runtime 
+  PUBLIC
+    $<INSTALL_INTERFACE:include>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
+)
+
+target_link_libraries( lart-runtime PRIVATE project_warnings project_options )
+
+# TESTING
 if( ENABLE_TESTING )
   enable_testing()
   add_subdirectory( test )
 endif()
 
-add_subdirectory( src )
+# INSTALL
+include( GNUInstallDirs )

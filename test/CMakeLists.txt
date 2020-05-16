@@ -5,8 +5,14 @@ target_link_libraries( catch_main PRIVATE Catch2::Catch2 )
 
 target_link_libraries( catch_main PRIVATE project_options )
 
-add_executable( unit shadow.cpp )
-target_link_libraries( unit PRIVATE project_warnings project_options catch_main )
+add_executable( unit shadow.cpp taint.cpp )
+target_link_libraries( unit
+  PRIVATE 
+    project_warnings
+    project_options
+    catch_main
+    lart-runtime
+)
 
 include( CTest )
 include( ParseAndAddCatchTests )
