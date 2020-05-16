@@ -1,4 +1,4 @@
-cmake_minimum_required( VERSION 3.15)
+cmake_minimum_required( VERSION 3.12)
 
 project( liblart-runtime LANGUAGES CXX )
 include( cmake/project_settings.cmake )
