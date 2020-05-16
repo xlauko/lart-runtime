@@ -9,7 +9,7 @@ os:
 
 compiler:
   - gcc
-  - clang
+  # - clang
 
 env:
   - TRAVIS_BUILD_TYPE=Debug
