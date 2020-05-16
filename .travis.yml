@@ -1,0 +1,73 @@
+language: cpp
+
+dist: bionic
+sudo: required
+cache: ccache
+
+os:
+  - linux
+
+compiler:
+  - gcc
+  - clang
+
+env:
+  - TRAVIS_BUILD_TYPE=Debug
+  - TRAVIS_BUILD_TYPE=Release
+
+addons:
+  apt:
+    sources:
+    - ubuntu-toolchain-r-test
+    packages:
+    - clang-10
+    - cmake
+    - gcc-10
+    - g++-10
+    - ninja-build
+
+before_install:
+  # Configure ccache and use it also under Linux with clang and clang++
+  - export PATH="/usr/lib/ccache/bin/:$PATH"
+  - if [ "$CC" == "clang" ]; then export CFLAGS="-Qunused-arguments"; fi
+  - if [ "$CXX" == "clang++" ]; then export CXXFLAGS="-Qunused-arguments"; fi
+  # /usr/bin/gcc points to an older compiler on both Linux and macOS.
+  - if [ "$CXX" = "g++" ]; then export CXX="g++-10" CC="gcc-10"; fi
+  # /usr/bin/clang points to an older compiler on both Linux and macOS.
+  #
+  # Homebrew's llvm package doesn't ship a versioned clang++ binary, so the values
+  # below don't work on macOS. Fortunately, the path change above makes the
+  # default values (clang and clang++) resolve to the correct compiler on macOS.
+  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then
+      if [ "$CXX" = "clang++" ]; then export CXX="clang++-10" CC="clang-10"; fi;
+    fi
+
+  # Coveralls
+  - pip install --user cpp-coveralls
+  # Print some more system information after installing all build tools
+  - echo "-------------------- BEGIN SYSTEM INFORMATION --------------------"
+  - uname -a
+  - lsb_release -a;
+  - env
+  - which cmake
+  - cmake --version
+  - which $CC
+  - $CC --version
+  - which $CXX
+  - $CXX --version
+  - which ccache
+  - ccache --version
+  - ccache -s
+  - echo "--------------------  END SYSTEM INFORMATION  --------------------"
+
+before_script:
+  - mkdir build
+  - cd build
+  - cmake -G Ninja -DCMAKE_BUILD_TYPE=${TRAVIS_BUILD_TYPE} -DCMAKE_CXX_FLAGS=${CXX_FLAGS} -DENABLE_SANITIZE=ON ..
+
+script:
+  - cmake --build .
+  - ctest
+
+after_success:
+  - coveralls --root .. -E ".*external.*" -E ".*CMakeFiles.*" -E ".*test/.*.cpp.*"
