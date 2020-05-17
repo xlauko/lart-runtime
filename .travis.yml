@@ -79,7 +79,7 @@ before_script:
 
 script:
   - if [ "$STATIC_CHECKS" = "yes" ]; then
-    sh ./scripts/travis/clang-format.sh;
+    sh ../scripts/travis/clang-format.sh;
     fi
   - cmake --build .
   - ctest
