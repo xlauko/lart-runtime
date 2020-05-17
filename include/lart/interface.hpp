@@ -7,5 +7,4 @@
 #include "taint.hpp"
 
 namespace __lart::runtime
-{
-}
+{}

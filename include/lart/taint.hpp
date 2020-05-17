@@ -4,7 +4,7 @@
 
 namespace __lart::runtime
 {
-    auto taint( std::integral auto value ) 
+    auto taint( std::integral auto value )
     {
         return value;
     }
@@ -13,4 +13,4 @@ namespace __lart::runtime
     {
         return false;
     }
-}
+} // namespace __lart::runtime
