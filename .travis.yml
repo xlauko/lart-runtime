@@ -78,8 +78,8 @@ before_script:
   - cmake -G Ninja -DCMAKE_BUILD_TYPE=${TRAVIS_BUILD_TYPE} -DCMAKE_CXX_FLAGS=${CXX_FLAGS} -DENABLE_SANITIZE=ON ..
 
 script:
-  - if [ "$STAIC_CHECKS" = "yes" ]; then
-    sh ./scripts/travis/clang-format.sh
+  - if [ "$STATIC_CHECKS" = "yes" ]; then
+    sh ./scripts/travis/clang-format.sh;
     fi
   - cmake --build .
   - ctest
