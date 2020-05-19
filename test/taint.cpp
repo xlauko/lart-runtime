@@ -6,5 +6,7 @@ using namespace __lart::runtime;
 
 TEST_CASE( "taint", "[taint]" )
 {
-    REQUIRE( true );
+    int x  = 0;
+    auto t = make_tainted( x );
+    REQUIRE( is_tainted( t ) );
 }
