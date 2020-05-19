@@ -3,6 +3,9 @@ cmake_minimum_required( VERSION 3.12 )
 option( LART_BUILD_LIBCXX           "Build with libc++ library." ON )
 option( LART_LIBCXX_WITH_EXCEPTIONS "Build libc++ with exception support." OFF )
 
+set( LART_LLVM_SOURCE_DIR ${CMAKE_CURRENT_BINARY_DIR}/llvm-project )
+set( LART_LLVM_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/llvm-project-build )
+
 if ( LART_BUILD_LIBCXX )
     include(ExternalProject)
 
@@ -43,12 +46,8 @@ if ( LART_BUILD_LIBCXX )
 endif()
 
 add_library( libcxx INTERFACE )
+add_dependencies( libcxx llvm )
 
-target_compile_options( libcxx
-    INTERFACE
-        "-fsanitize=dataflow;-nostdinc++;-stdlib=libc++"
-)
 
-target_include_directories( libcxx INTERFACE ${TEST_LLVM_BINARY_DIR}/include/c++/v1 )
-target_link_directories( libcxx INTERFACE ${TEST_LLVM_BINARY_DIR}/lib )
-target_link_options( libcxx INTERFACE "-fsanitize=dataflow;-stdlib=libc++;-Wl,-rpath,${TEST_LLVM_BINARY_DIR}/lib" )
+target_include_directories( libcxx INTERFACE ${LART_LLVM_BINARY_DIR}/include/c++/v1 )
+target_link_directories( libcxx INTERFACE ${LART_LLVM_BINARY_DIR}/lib )
