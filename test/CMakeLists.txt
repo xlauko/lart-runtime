@@ -3,7 +3,7 @@ add_library( catch_main STATIC catch_main.cpp )
 find_package( Catch2 CONFIG REQUIRED )
 target_link_libraries( catch_main PRIVATE Catch2::Catch2 )
 
-target_link_libraries( catch_main PRIVATE project_options )
+target_link_libraries( catch_main PRIVATE project_options lart-runtime )
 
 add_executable( unit shadow.cpp taint.cpp )
 target_link_libraries( unit
