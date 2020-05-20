@@ -68,7 +68,8 @@ before_install:
   - uname -a
   - lsb_release -a;
   - env
-  - ${CMAKE} --version
+  - which cmake
+  - cmake --version
   - which $CC
   - $CC --version
   - which $CXX
