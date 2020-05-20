@@ -72,7 +72,9 @@ before_script:
   - cd build
 
 script:
-  - echo "script"
+  - cmake ../
+  - cmake --build . --verbose
+  - ctest
 
 after_success:
   - echo "success"
