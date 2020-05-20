@@ -51,6 +51,8 @@ if ( ENABLE_PCH )
 endif()
 
 # setup external libraries
+set( LART_LLVM_SOURCE_DIR ${CMAKE_CURRENT_BINARY_DIR}/external/llvm-project )
+set( LART_LLVM_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/external/llvm-project-build )
 add_subdirectory( external )
 
 # LIBRARY

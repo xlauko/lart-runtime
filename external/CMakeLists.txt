@@ -3,9 +3,6 @@ cmake_minimum_required( VERSION 3.13 )
 option( LART_BUILD_LIBCXX           "Build with libc++ library." ON )
 option( LART_LIBCXX_WITH_EXCEPTIONS "Build libc++ with exception support." OFF )
 
-set( LART_LLVM_SOURCE_DIR ${CMAKE_CURRENT_BINARY_DIR}/llvm-project )
-set( LART_LLVM_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/llvm-project-build )
-
 if ( LART_BUILD_LIBCXX )
     include(ExternalProject)
 
