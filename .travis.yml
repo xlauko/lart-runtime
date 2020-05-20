@@ -11,7 +11,6 @@ compiler:
   - clang
 
 env:
-  - STATIC_CHECKS=yes
   - TRAVIS_BUILD_TYPE=Debug
   - TRAVIS_BUILD_TYPE=Release
 
@@ -25,6 +24,8 @@ addons:
       - clang-10
       - ninja-build
       - clang-format
+
+install:
 
 before_install:
   # Configure ccache and use it also under Linux with clang and clang++
@@ -53,7 +54,7 @@ before_install:
   - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then
     CMAKE_URL="https://cmake.org/files/v3.17/cmake-3.17.0-Linux-x86_64.tar.gz";
     mkdir cmake && travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar;--strip-components=1 -xz -C cmake;
-    export PATH=${DEPS_DIR}/cmake/bin:${PATH};
+    ln -s ${DEPS_DIR}/cmake/bin /usr/local/bin/cmake
     fi
   # Coveralls
   - pip install --user cpp-coveralls
