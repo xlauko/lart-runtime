@@ -11,11 +11,12 @@ compiler:
   - clang
 
 env:
+  - TRAVIS_BUILD_TYPE=Debug
+  - TRAVIS_BUILD_TYPE=Release
+  global:
   - DEPS_DIR="${TRAVIS_BUILD_DIR}/deps"
   - CMAKE_DIR=${DEPS_DIR}/cmake
   - CMAKE=${CMAKE_DIR}/bin/cmake
-  - TRAVIS_BUILD_TYPE=Debug
-  - TRAVIS_BUILD_TYPE=Release
 
 addons:
   apt:
