@@ -20,6 +20,6 @@ jobs:
         sudo apt-get -y update
         sudo apt-get -y install cmake clang
     - name: configure
-      run: mkdir build && cd build && cmake -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang -DENABLE_TESTING=FALSE ..
+      run: mkdir build && cd build && cmake -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang -DENABLE_TESTING=FALSE -DCMAKE_BUILD_TYPE=$BUILD_TYPE ..
     - name: build
       run: cmake --build build
