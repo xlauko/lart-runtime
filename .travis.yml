@@ -31,7 +31,7 @@ addons:
       - ninja-build
       - clang-format
 
-install:
+before_install:
   - export DEPS_DIR="${HOME}/deps"
   - mkdir -p ${DEPS_DIR}
   # Cmake 3.17
@@ -41,10 +41,11 @@ install:
     mkdir cmake;
     travis_retry wget --no-check-certificate -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmake;
     export PATH=${DEPS_DIR}/cmake/bin:${PATH};
-    cd "$TRAVIS_BUILD_DIR";
+
+install:
   # Catch2
   - |
-    cd "$HOME";
+    cd "$DEPS_DIR";
     git clone https://github.com/catchorg/Catch2.git;
     cd Catch2;
     cmake -Bbuild -H. -DBUILD_TESTING=OFF;
