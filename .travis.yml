@@ -8,10 +8,10 @@ os:
   - linux
 
 compiler:
-  - gcc
   - clang
 
 env:
+  - DEPS_DIR=${TRAVIS_BUILD_DIR}/deps
   - STATIC_CHECKS=yes
   - TRAVIS_BUILD_TYPE=Debug
   - TRAVIS_BUILD_TYPE=Release
@@ -24,9 +24,6 @@ addons:
       - sourceline: "ppa:ubuntu-toolchain-r/test"
     packages:
       - clang-10
-      - gcc-10
-      - g++-10
-      - ninja-build
       - clang-format
 
 before_install:
@@ -34,15 +31,12 @@ before_install:
   - export PATH="/usr/lib/ccache/bin/:$PATH"
   - if [ "$CC" == "clang" ]; then export CFLAGS="-Qunused-arguments"; fi
   - if [ "$CXX" == "clang++" ]; then export CXXFLAGS="-Qunused-arguments"; fi
-  # /usr/bin/gcc points to an older compiler on both Linux and macOS.
-  - if [ "$CXX" = "g++" ]; then export CXX="g++-10" CC="gcc-10"; fi
-  # /usr/bin/clang points to an older compiler on both Linux and macOS.
-  #
-  # Homebrew's llvm package doesn't ship a versioned clang++ binary, so the values
-  # below don't work on macOS. Fortunately, the path change above makes the
-  # default values (clang and clang++) resolve to the correct compiler on macOS.
-  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then
-    if [ "$CXX" = "clang++" ]; then export CXX="clang++-10" CC="clang-10"; fi;
+  # Install recent cmake
+  - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then
+    CMAKE_URL="https://cmake.org/files/v3.17/cmake-3.17.0-Linux-x86_64.tar.gz";
+    mkdir -p ${DEPS_DIR}/cmake
+    travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C ${DEPS_DIR}/cmake;
+    export PATH=${DEPS_DIR}/cmake/bin:${PATH};
     fi
   # Install Catch2
   - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then
@@ -52,11 +46,6 @@ before_install:
     cmake -Bbuild -H. -DBUILD_TESTING=OFF;
     sudo cmake --build build/ --target install;
     cd "$TRAVIS_BUILD_DIR";
-    fi
-  - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then
-    CMAKE_URL="https://cmake.org/files/v3.17/cmake-3.17.0-Linux-x86_64.tar.gz";
-    mkdir cmake && travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar;--strip-components=1 -xz -C cmake;
-    export PATH=${DEPS_DIR}/cmake/bin:${PATH};
     fi
   # Coveralls
   - pip install --user cpp-coveralls
