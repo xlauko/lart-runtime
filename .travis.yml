@@ -83,7 +83,7 @@ before_script:
 
 script:
   - sh ../scripts/travis/clang-format.sh;
-  - ${CMAKE} --build .
+  - ${CMAKE} --build . --verbose
   - ctest
 
 after_success:

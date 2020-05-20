@@ -80,6 +80,8 @@ target_link_libraries( lart-runtime
     project_options
 )
 
+add_dependencies( lart-runtime libcxx )
+
 # TESTING
 if( ENABLE_TESTING )
   enable_testing()
