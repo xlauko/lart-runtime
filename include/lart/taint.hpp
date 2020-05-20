@@ -1,6 +1,5 @@
 #pragma once
 
-#include <concepts>
 #include <sanitizer/dfsan_interface.h>
 
 namespace __lart::runtime

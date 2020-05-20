@@ -1,4 +1,4 @@
-cmake_minimum_required( VERSION 3.13 )
+cmake_minimum_required( VERSION 3.17 )
 
 project( liblart-runtime LANGUAGES CXX )
 include( cmake/project_settings.cmake )
@@ -70,6 +70,7 @@ target_include_directories( lart-runtime
   PUBLIC
     $<INSTALL_INTERFACE:include>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<BUILD_INTERFACE:${LART_LLVM_BINARY_DIR}/include>
   PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
