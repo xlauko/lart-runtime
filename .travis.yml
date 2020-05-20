@@ -4,52 +4,56 @@ dist: bionic
 sudo: required
 cache: ccache
 
-os:
-  - linux
-
-compiler:
-  - clang
-
 env:
-  - DEPS_DIR=${TRAVIS_BUILD_DIR}/deps
-  - STATIC_CHECKS=yes
-  - TRAVIS_BUILD_TYPE=Debug
-  - TRAVIS_BUILD_TYPE=Release
+  - DEPS="${TRAVIS_BUILD_DIR}/deps"
+  global:
+    - PATH="${DEPS}/cmake/bin:$PATH"
 
-addons:
-  apt:
-    sources:
-      - sourceline: "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-10 main"
-        key_url: "https://apt.llvm.org/llvm-snapshot.gpg.key"
-      - sourceline: "ppa:ubuntu-toolchain-r/test"
-    packages:
-      - clang-10
-      - clang-format
+matrix:
+  include:
+    - os: linux
+      addons:
+        apt:
+          - sourceline: "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-10 main"
+            key_url: "https://apt.llvm.org/llvm-snapshot.gpg.key"
+          - sourceline: "ppa:ubuntu-toolchain-r/test"
+        packages:
+          - clang-10
+        env:
+          - CC=clang-10
+          - CXX=clang++10
+          - CFLAGS="-Qunused-arguments"
+          - CXXFLAGS="-Qunused-arguments"
+          - TRAVIS_BUILD_TYPE=RelWithDebInfo
+    - os: linux
+      addons:
+        packages:
+          - clang-format
+        env:
+          - STATIC_CHECK="yes"
 
 before_install:
   # Configure ccache and use it also under Linux with clang and clang++
   - export PATH="/usr/lib/ccache/bin/:$PATH"
-  - if [ "$CC" == "clang" ]; then export CFLAGS="-Qunused-arguments"; fi
-  - if [ "$CXX" == "clang++" ]; then export CXXFLAGS="-Qunused-arguments"; fi
 install:
   # Install recent cmake
-  - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then
+  - |
+    if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
     CMAKE_URL="https://cmake.org/files/v3.17/cmake-3.17.0-Linux-x86_64.tar.gz";
-    mkdir -p ${DEPS_DIR}/cmake
-    travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C ${DEPS_DIR}/cmake;
-    export PATH=${DEPS_DIR}/cmake/bin:${PATH};
+    mkdir -p ${DEPS}/cmake
+    travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C ${DEPS}/cmake;
     fi
   # Install Catch2
   - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then
-    cd "$HOME";
+    cd "$DEPS";
     git clone https://github.com/catchorg/Catch2.git;
     cd Catch2;
     cmake -Bbuild -H. -DBUILD_TESTING=OFF;
     sudo cmake --build build/ --target install;
-    cd "$TRAVIS_BUILD_DIR";
+    cd "${TRAVIS_BUILD_DIR}";
     fi
   # Coveralls
-  - pip install --user cpp-coveralls
+  # - pip install --user cpp-coveralls
   # Print some more system information after installing all build tools
   - echo "-------------------- BEGIN SYSTEM INFORMATION --------------------"
   - uname -a
@@ -66,17 +70,17 @@ install:
   - ccache -s
   - echo "--------------------  END SYSTEM INFORMATION  --------------------"
 
-before_script:
-  - mkdir build
-  - cd build
-  - cmake -DCMAKE_BUILD_TYPE=${TRAVIS_BUILD_TYPE} -DCMAKE_CXX_FLAGS=${CXX_FLAGS} -DENABLE_SANITIZE=ON ..
-
 script:
-  - if [ "$STATIC_CHECKS" = "yes" ]; then
-    sh ../scripts/travis/clang-format.sh;
+  - |
+    if [ "$STATIC_CHECKS" = "yes" ]; then
+    sh ../scripts/travis/clang-format.sh
+    else
+    mkdir build
+    cd build
+    cmake -DCMAKE_BUILD_TYPE=${TRAVIS_BUILD_TYPE} -DCMAKE_CXX_FLAGS=${CXX_FLAGS} -DENABLE_SANITIZE=ON ..
+    cmake --build .
+    ctest
     fi
-  - cmake --build .
-  - ctest
 
-after_success:
-  - coveralls --root .. -E ".*external.*" -E ".*CMakeFiles.*" -E ".*test/.*.cpp.*"
+# after_success:
+#  - coveralls --root .. -E ".*external.*" -E ".*CMakeFiles.*" -E ".*test/.*.cpp.*"
