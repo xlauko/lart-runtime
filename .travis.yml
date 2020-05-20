@@ -12,6 +12,8 @@ compiler:
 
 env:
   - DEPS_DIR="${TRAVIS_BUILD_DIR}/deps"
+  - CMAKE_DIR=${DEPS_DIR}/cmake
+  - CMAKE=${CMAKE_DIR}/bin/cmake
   - TRAVIS_BUILD_TYPE=Debug
   - TRAVIS_BUILD_TYPE=Release
 
@@ -52,7 +54,7 @@ before_install:
     fi
   - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then
     CMAKE_URL="https://cmake.org/files/v3.17/cmake-3.17.0-Linux-x86_64.tar.gz";
-    mkdir cmake && travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar;--strip-components=1 -xz -C cmake;
+    mkdir ${CMAKE_DIR} && travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar;--strip-components=1 -xz -C ${CMAKE_DIR};
     fi
   # Coveralls
   - pip install --user cpp-coveralls
@@ -61,8 +63,7 @@ before_install:
   - uname -a
   - lsb_release -a;
   - env
-  - which cmake
-  - cmake --version
+  - ${CMAKE} --version
   - which $CC
   - $CC --version
   - which $CXX
@@ -75,11 +76,11 @@ before_install:
 before_script:
   - mkdir build
   - cd build
-  - ${DEPS_DIR}/bin/cmake -G Ninja -DCMAKE_BUILD_TYPE=${TRAVIS_BUILD_TYPE} -DCMAKE_CXX_FLAGS=${CXX_FLAGS} -DENABLE_SANITIZE=ON ..
+  - ${CMAKE} -G Ninja -DCMAKE_BUILD_TYPE=${TRAVIS_BUILD_TYPE} -DCMAKE_CXX_FLAGS=${CXX_FLAGS} -DENABLE_SANITIZE=ON ..
 
 script:
   - sh ../scripts/travis/clang-format.sh;
-  - cmake --build .
+  - ${CMAKE} --build .
   - ctest
 
 after_success:
