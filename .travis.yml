@@ -10,21 +10,12 @@ cache:
   directories:
     - ${TRAVIS_BUILD_DIR}/deps
 
-stages:
-  - name: Latest     # build jobs to run first and always
-  - name: Validation # run other jobs
-  - name: Legacy     # build with all other supported options
-
-jobs:
-  include:
-
-
 env:
   global:
     - CFLAGS="-Qunused-arguments"
     - CXXFLAGS="-Qunused-arguments"
     - CC=clang-10
-    - CXX=clang++10
+    - CXX=clang++-10
   matrix:
     - TRAVIS_BUILD_TYPE=Debug
     - TRAVIS_BUILD_TYPE=Release
@@ -42,14 +33,46 @@ addons:
 
 install:
   - export DEPS_DIR="${HOME}/deps"
-  - mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
-  - echo ${TRAVIS_OS_NAME}
+  - mkdir -p ${DEPS_DIR}
+  # Cmake 3.17
   - |
-    if [ "${TRAVIS_OS_NAME}" = "linux" ]; then
-      export CMAKE_URL="https://github.com/Kitware/CMake/releases/download/v3.17.0/cmake-3.17.0-Linux-x86_64.tar.gz";
-      mkdir cmake;
-      travis_retry wget --no-check-certificate -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmake;
-      export PATH=${DEPS_DIR}/cmake/bin:${PATH};
-      echo ${PATH};
-    fi
+    cd "$DEPS_DIR";
+    export CMAKE_URL="https://github.com/Kitware/CMake/releases/download/v3.17.0/cmake-3.17.0-Linux-x86_64.tar.gz";
+    mkdir cmake;
+    travis_retry wget --no-check-certificate -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmake;
+    export PATH=${DEPS_DIR}/cmake/bin:${PATH};
+    cd "$TRAVIS_BUILD_DIR";
+  # Catch2
+  - |
+    cd "$DEPS_DIR";
+    git clone https://github.com/catchorg/Catch2.git;
+    cd Catch2;
+    cmake -Bbuild -H. -DBUILD_TESTING=OFF;
+    sudo cmake --build build/ --target install;
+    cd "$TRAVIS_BUILD_DIR";
+  # Coveralls
+  - pip install --user cpp-coveralls
+  - echo "-------------------- BEGIN SYSTEM INFORMATION --------------------"
+  - uname -a
+  - lsb_release -a;
+  - env
+  - which cmake
   - cmake --version
+  - which $CC
+  - $CC --version
+  - which $CXX
+  - $CXX --version
+  - which ccache
+  - ccache --version
+  - ccache -s
+  - echo "--------------------  END SYSTEM INFORMATION  --------------------"
+
+before_script:
+  - mkdir build
+  - cd build
+
+script:
+  - echo "script"
+
+after_success:
+  - echo "success"
