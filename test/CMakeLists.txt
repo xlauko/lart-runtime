@@ -1,3 +1,5 @@
+cmake_minimum_required( VERSION 3.13 )
+
 add_library( catch_main STATIC catch_main.cpp )
 
 find_package( Catch2 CONFIG REQUIRED )

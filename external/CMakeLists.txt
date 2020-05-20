@@ -1,4 +1,4 @@
-cmake_minimum_required( VERSION 3.12 )
+cmake_minimum_required( VERSION 3.13 )
 
 option( LART_BUILD_LIBCXX           "Build with libc++ library." ON )
 option( LART_LIBCXX_WITH_EXCEPTIONS "Build libc++ with exception support." OFF )
