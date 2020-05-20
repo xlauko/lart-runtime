@@ -53,7 +53,6 @@ before_install:
   - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then
     CMAKE_URL="https://cmake.org/files/v3.17/cmake-3.17.0-Linux-x86_64.tar.gz";
     mkdir cmake && travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar;--strip-components=1 -xz -C cmake;
-    sudo ln -s ${DEPS_DIR}/cmake/bin /usr/local/bin/cmake;
     fi
   # Coveralls
   - pip install --user cpp-coveralls
@@ -76,7 +75,7 @@ before_install:
 before_script:
   - mkdir build
   - cd build
-  - cmake -G Ninja -DCMAKE_BUILD_TYPE=${TRAVIS_BUILD_TYPE} -DCMAKE_CXX_FLAGS=${CXX_FLAGS} -DENABLE_SANITIZE=ON ..
+  - ${DEPS_DIR}/bin/cmake -G Ninja -DCMAKE_BUILD_TYPE=${TRAVIS_BUILD_TYPE} -DCMAKE_CXX_FLAGS=${CXX_FLAGS} -DENABLE_SANITIZE=ON ..
 
 script:
   - sh ../scripts/travis/clang-format.sh;
