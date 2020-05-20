@@ -44,7 +44,7 @@ install:
     cd "$TRAVIS_BUILD_DIR";
   # Catch2
   - |
-    cd "$DEPS_DIR";
+    cd "$HOME";
     git clone https://github.com/catchorg/Catch2.git;
     cd Catch2;
     cmake -Bbuild -H. -DBUILD_TESTING=OFF;
