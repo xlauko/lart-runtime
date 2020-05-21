@@ -2,15 +2,12 @@
 // This file is subject to the license terms in the LICENSE file
 // found in the top-level directory of this distribution.
 
-#include "lart/taint.hpp"
-#include "utils.hpp"
+#pragma once
+
+#include <cstddef>
+
 namespace __lart::runtime
 {
-    dfsan_label taint;
-
-    constructor void init_taint()
-    {
-        taint = dfsan_create_label( "taint", 0 );
-    }
-
+    void poke( void *addr, std::size_t size, void *value );
+    void *peek( void *addr );
 } // namespace __lart::runtime
