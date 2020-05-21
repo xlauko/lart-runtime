@@ -55,6 +55,10 @@ set( LART_LLVM_SOURCE_DIR ${CMAKE_CURRENT_BINARY_DIR}/external/llvm-project )
 set( LART_LLVM_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/external/llvm-project-build )
 add_subdirectory( external )
 
+# link against sanitized libc++
+add_compile_options( "-fsanitize=dataflow;-nostdinc++;-fno-exceptions" )
+add_link_options( "-fsanitize=dataflow;-stdlib=libc++;-Wl,-rpath,${LART_LLVM_BINARY_DIR}/lib" )
+
 # LIBRARY
 add_library( lart-runtime
   SHARED
@@ -62,15 +66,12 @@ add_library( lart-runtime
     src/taint.cpp
 )
 
-# link against sanitized libc++
-add_compile_options( "-fsanitize=dataflow;-nostdinc++;-fno-exceptions" )
-add_link_options( "-fsanitize=dataflow;-stdlib=libc++;-Wl,-rpath,${LART_LLVM_BINARY_DIR}/lib" )
-
 target_include_directories( lart-runtime 
   PUBLIC
     $<INSTALL_INTERFACE:include>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<BUILD_INTERFACE:${LART_LLVM_BINARY_DIR}/include>
+    $<BUILD_INTERFACE:${LART_LLVM_BINARY_DIR}/include/c++/v1>
   PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
