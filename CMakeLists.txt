@@ -63,6 +63,7 @@ add_link_options( "-fsanitize=dataflow;-stdlib=libc++;-Wl,-rpath,${LART_LLVM_BIN
 add_library( lart-runtime
   SHARED
     src/choose.cpp
+    src/shadow.cpp
     src/taint.cpp
 )
 
