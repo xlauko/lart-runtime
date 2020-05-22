@@ -22,7 +22,7 @@ jobs:
     - name: install
       run: |
         sudo apt-get -y update
-        sudo apt-get -y install cmake clang ninja-build
+        sudo apt-get -y install cmake clang ninja-build libc++-dev libc++abi-dev
 
     - name: Download ccache
       id: ccache
