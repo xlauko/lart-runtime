@@ -50,7 +50,6 @@ jobs:
     - name: configure
       shell: cmake -P {0}
       run: |
-        cmake --version
         set(ENV{PATH} "$ENV{GITHUB_WORKSPACE}:$ENV{PATH}")
         execute_process(
           COMMAND cmake
