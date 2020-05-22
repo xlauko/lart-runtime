@@ -60,7 +60,7 @@ jobs:
             -D CMAKE_MAKE_PROGRAM=ninja
             -D CMAKE_C_COMPILER_LAUNCHER=ccache
             -D CMAKE_CXX_COMPILER_LAUNCHER=ccache
-            -D CMAKE_CXX_COMPILER=clangc++
+            -D CMAKE_CXX_COMPILER=clang++
             -D CMAKE_C_COMPILER=clang
           RESULT_VARIABLE result
         )
