@@ -12,6 +12,10 @@
 
 using namespace __lart::runtime;
 
+namespace __lart::runtime {
+    shadow_t peek( const void *addr );
+}
+
 TEST_CASE( "simple", "[shadow]" )
 {
     auto ptr = std::make_unique< char >();
@@ -60,9 +64,6 @@ TEST_CASE( "interval peek", "[shadow]" )
 {
     using P = peeked;
 
-    constexpr std::size_t size = 10;
-    auto arr = std::make_unique< char [] >( size );
-
     auto test = [] ( auto peek, auto expected ) {
         std::size_t i = 0;
         for ( auto shadow : peek() ) {
@@ -73,6 +74,9 @@ TEST_CASE( "interval peek", "[shadow]" )
 
         REQUIRE( i == expected.size() );
     };
+
+    constexpr std::size_t size = 10;
+    auto arr = std::make_unique< char [] >( size );
 
     SECTION( "empty interval" )
     {

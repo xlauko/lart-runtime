@@ -11,10 +11,9 @@
 
 namespace __lart::runtime
 {
-    void poke( void *addr, std::size_t size, void *value );
-    void *peek( void *addr );
-
     using shadow_t = void *;
+
+    void poke( void *addr, std::size_t size, shadow_t value );
 
     struct peeked
     {

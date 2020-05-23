@@ -12,17 +12,10 @@
 
 namespace __lart::runtime
 {
-    void poke( void *addr, size_t size, void *value )
+    void poke( void *addr, size_t size, shadow_t value )
     {
         auto shadow = dfsan_create_label( "shadow", value );
         dfsan_set_label( shadow, addr, size );
-    }
-
-    void *peek( void *addr )
-    {
-        auto meta = dfsan_read_label( addr, 1 ); // TODO interval melt
-        auto info = dfsan_get_label_info( meta );
-        return info->userdata;
     }
 
     shadow_t peek( const void *addr )
