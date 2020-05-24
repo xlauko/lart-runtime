@@ -18,12 +18,9 @@ set_project_warnings( project_warnings )
 include( cmake/sanitizers.cmake )
 enable_sanitizers( project_options )
 
-set( CMAKE_C_COMPILER "clang" )
-set( CMAKE_CXX_COMPILER "clang++" )
-
-# if ( NOT CMAKE_CXX_COMPILER_ID MATCHES ".*Clang" )
-#   message( FATAL_ERROR "LART-Runtime requires clang compiler." )
-# endif()
+if ( NOT CMAKE_CXX_COMPILER_ID MATCHES ".*Clang" )
+  message( FATAL_ERROR "LART-Runtime requires clang compiler." )
+endif()
 
 # clang time profiling
 # if ( CMAKE_CXX_COMPILER_ID MATCHES ".*Clang" )
