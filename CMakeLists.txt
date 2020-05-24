@@ -64,6 +64,7 @@ add_library( lart-runtime
   SHARED
     src/choose.cpp
     src/shadow.cpp
+    src/stash.cpp
     src/taint.cpp
 )
 
