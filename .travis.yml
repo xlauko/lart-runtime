@@ -72,9 +72,6 @@ install:
 script:
   - mkdir build
   - cd build
-  - cmake ../
-  - cmake --build . --verbose --config ${TRAVIS_BUILD_TYPE}
+  - cmake .. -DCMAKE_CXX_COMPILER=${CXX} -DCMAKE_C_COMPILER=${CC} -DCMAKE_BUILD_TYPE=${TRAVIS_BUILD_TYPE}
+  - cmake --build . --verbose
   - ctest
-
-after_success:
-  - echo "success"
