@@ -4,19 +4,19 @@
 
 #include "lart/shadow.hpp"
 
-#include <catch2/catch.hpp>
-
 #include <array>
+#include <catch2/catch.hpp>
 #include <cstdlib>
 #include <iterator>
 
 using namespace __lart::runtime;
 
-namespace __lart::runtime {
+namespace __lart::runtime
+{
     shadow_t peek( const void *addr );
 }
 
-TEST_CASE( "simple", "[shadow]" )
+TEST_CASE( "simple shadow", "[shadow]" )
 {
     auto ptr = std::make_unique< char >();
     auto val = std::make_unique< char >();
@@ -46,7 +46,7 @@ TEST_CASE( "simple", "[shadow]" )
 
 TEST_CASE( "memory", "[shadow]" )
 {
-    auto arr = std::make_unique< char [] >( 5 );
+    auto arr = std::make_unique< char[] >( 5 );
 
     unsigned char val = 42;
     poke( &arr[ 3 ], 1, &val );
@@ -64,24 +64,24 @@ TEST_CASE( "interval peek", "[shadow]" )
 {
     using P = peeked;
 
-    auto test = [] ( auto peek, auto expected ) {
+    auto test = []( auto peek, auto expected ) {
         std::size_t i = 0;
         for ( auto shadow : peek() ) {
-            REQUIRE( shadow.value == expected[ i ].value );
-            REQUIRE( shadow.offset == expected[ i ].offset );
-            ++i;
-        }
+                REQUIRE( shadow.value == expected[ i ].value );
+                REQUIRE( shadow.offset == expected[ i ].offset );
+                ++i;
+            }
 
         REQUIRE( i == expected.size() );
     };
 
     constexpr std::size_t size = 10;
-    auto arr = std::make_unique< char [] >( size );
+    auto arr                   = std::make_unique< char[] >( size );
 
     SECTION( "empty interval" )
     {
-        std::array expected = { P{ nullptr, 0 } };
-        test( [&] { return peek( arr.get(), size ); }, expected );
+        std::array expected = { P { nullptr, 0 } };
+        test( [ & ] { return peek( arr.get(), size ); }, expected );
     }
 
     auto a = std::make_unique< char >();
@@ -90,24 +90,24 @@ TEST_CASE( "interval peek", "[shadow]" )
     {
         poke( arr.get(), 1, a.get() );
 
-        std::array expected = { P{ a.get(), 0 }, P{ nullptr, 1 } };
-        test( [&] { return peek( arr.get(), size ); }, expected );
+        std::array expected = { P { a.get(), 0 }, P { nullptr, 1 } };
+        test( [ & ] { return peek( arr.get(), size ); }, expected );
     }
-    
+
     SECTION( "single value in middle" )
     {
         poke( &arr[ 4 ], 1, a.get() );
 
-        std::array expected = { P{ nullptr, 0 }, P{ a.get(), 4 }, P{ nullptr, 5 } };
-        test( [&] { return peek( arr.get(), size ); }, expected );
+        std::array expected = { P { nullptr, 0 }, P { a.get(), 4 }, P { nullptr, 5 } };
+        test( [ & ] { return peek( arr.get(), size ); }, expected );
     }
-    
+
     SECTION( "single value at end" )
     {
         poke( &arr[ size - 1 ], 1, a.get() );
 
-        std::array expected = { P{ nullptr, 0 }, P{ a.get(), 9 } };
-        test( [&] { return peek( arr.get(), size ); }, expected );
+        std::array expected = { P { nullptr, 0 }, P { a.get(), 9 } };
+        test( [ & ] { return peek( arr.get(), size ); }, expected );
     }
 
     auto b = std::make_unique< char >();
@@ -117,20 +117,24 @@ TEST_CASE( "interval peek", "[shadow]" )
         poke( &arr[ 3 ], 2, a.get() );
         poke( &arr[ 7 ], 1, b.get() );
 
-        std::array expected = {
-            P{ nullptr, 0 }, P{ a.get(), 3 }, P{ nullptr, 5 }, P{ b.get(), 7 }, P{ nullptr, 8 } 
-        };
-        test( [&] { return peek( arr.get(), size ); }, expected );
+        std::array expected = { P { nullptr, 0 },
+                                P { a.get(), 3 },
+                                P { nullptr, 5 },
+                                P { b.get(), 7 },
+                                P { nullptr, 8 } };
+        test( [ & ] { return peek( arr.get(), size ); }, expected );
     }
-    
+
     SECTION( "overlap two values" )
     {
         poke( &arr[ 2 ], 5, a.get() );
         poke( &arr[ 4 ], 2, b.get() );
 
-        std::array expected = {
-            P{ nullptr, 0 }, P{ a.get(), 2 }, P{ b.get(), 4 }, P{ a.get(), 6 }, P{ nullptr, 7 } 
-        };
-        test( [&] { return peek( arr.get(), size ); }, expected );
+        std::array expected = { P { nullptr, 0 },
+                                P { a.get(), 2 },
+                                P { b.get(), 4 },
+                                P { a.get(), 6 },
+                                P { nullptr, 7 } };
+        test( [ & ] { return peek( arr.get(), size ); }, expected );
     }
 }

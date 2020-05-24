@@ -7,7 +7,7 @@ target_link_libraries( catch_main PRIVATE Catch2::Catch2 )
 
 target_link_libraries( catch_main PRIVATE project_options libcxx )
 
-add_executable( unit shadow.cpp taint.cpp )
+add_executable( unit shadow.cpp taint.cpp stash.cpp )
 target_link_libraries( unit
   PRIVATE 
     project_warnings

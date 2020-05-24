@@ -29,6 +29,8 @@ addons:
     packages:
       - cmake
       - clang-10
+      - libc++-dev
+      - libc++abi-dev
       - ninja-build
       - clang-format
 
