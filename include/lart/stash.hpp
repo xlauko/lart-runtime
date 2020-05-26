@@ -16,7 +16,7 @@ namespace __lart::runtime
     template< typename T > void stash( T value )
     {
         if constexpr ( std::is_pointer_v< T > )
-            stash_register = reinterpret_cast< std::uintptr_t >( value );
+            stash_register = reinterpret_cast< std::uintptr_t >( value ); // NOLINT
         else
             stash_register = static_cast< std::uint64_t >( value );
     }
@@ -25,7 +25,7 @@ namespace __lart::runtime
     {
         auto ret = [] {
             if constexpr ( std::is_pointer_v< T > )
-                return reinterpret_cast< T >( stash_register );
+                return reinterpret_cast< T >( stash_register ); // NOLINT
             else
                 return static_cast< T >( stash_register );
         }();

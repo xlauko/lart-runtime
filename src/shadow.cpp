@@ -20,22 +20,22 @@ namespace __lart::runtime
 
     shadow_t peek( const void *addr )
     {
-        auto meta = dfsan_read_label( addr, 1 );
-        auto info = dfsan_get_label_info( meta );
+        auto meta        = dfsan_read_label( addr, 1 );
+        const auto *info = dfsan_get_label_info( meta );
         return info->userdata;
     }
 
     generator< peeked > peek( const void *addr, std::size_t size )
     {
-        auto current = peek( addr );
-        co_yield peeked{ current, 0 }; // yield first shadow segment
+        auto *current = peek( addr );
+        co_yield peeked { current, 0 }; // yield first shadow segment
         for ( std::size_t off = 1; off < size; ++off ) {
-            auto at = static_cast< const std::byte * >( addr ) + off;
-            if ( auto shadow = peek( at ); shadow != current ) {
-                current = shadow;
-                co_yield peeked{ current, off };
+                const auto *at = static_cast< const std::byte * >( addr ) + off; // NOLINT
+                if ( auto *shadow = peek( at ); shadow != current ) {
+                        current = shadow;
+                        co_yield peeked { current, off };
+                }
             }
-        }
     }
 
 } // namespace __lart::runtime

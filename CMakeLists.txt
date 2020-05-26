@@ -23,14 +23,14 @@ if ( NOT CMAKE_CXX_COMPILER_ID MATCHES ".*Clang" )
 endif()
 
 # clang time profiling
-# if ( CMAKE_CXX_COMPILER_ID MATCHES ".*Clang" )
+if ( CMAKE_CXX_COMPILER_ID MATCHES ".*Clang" )
   option( ENABLE_BUILD_WITH_TIME_TRACE
     "Enable -ftime-trace to generate time tracing .json files on clang" OFF
   )
   if ( ENABLE_BUILD_WITH_TIME_TRACE )
     add_compile_definitions( project_options INTERFACE -ftime-trace )
   endif()
-# endif()
+endif()
 
 # allow for static analysis options
 include( cmake/static_analyzers.cmake )
@@ -46,6 +46,38 @@ if ( ENABLE_PCH )
   # consider breaking this out per project as necessary 
   target_precompile_headers( project_options INTERFACE <utility> )
 endif()
+
+# clang-tidy
+option( RUN_CLANG_TIDY "Run clang-tidy" ON )
+
+if ( RUN_CLANG_TIDY )
+  if ( CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR )
+    message( FATAL_ERROR "RUN_CLANG_TIDY requires an out-of-source build!" )
+  endif()
+
+  find_program( CLANG_TIDY_COMMAND NAMES clang-tidy )
+
+  if ( NOT CLANG_TIDY_COMMAND )
+    message( FATAL_ERROR "RUN_CLANG_TIDY is ON but clang-tidy is not found!" )
+  endif()
+
+  set( CMAKE_CXX_CLANG_TIDY 
+    ${CLANG_TIDY_COMMAND};
+    -warnings-as-errors=*;
+    -header-filter=include/*.hpp;
+  )
+
+  # Create a preprocessor definition that depends on .clang-tidy content so
+  # the compile command will change when .clang-tidy changes.  This ensures
+  # that a subsequent build re-runs clang-tidy on all sources even if they
+  # do not otherwise need to be recompiled.  Nothing actually uses this
+  # definition.  We add it to targets on which we run clang-tidy just to
+  # get the build dependency on the .clang-tidy file.
+  file( SHA1 ${CMAKE_CURRENT_SOURCE_DIR}/.clang-tidy clang_tidy_sha1 )
+  set( CLANG_TIDY_DEFINITIONS "CLANG_TIDY_SHA1=${clang_tidy_sha1}" )
+  unset( clang_tidy_sha1 )
+endif()
+configure_file( .clang-tidy .clang-tidy COPYONLY )
 
 # setup external libraries
 set( LART_LLVM_SOURCE_DIR ${CMAKE_CURRENT_BINARY_DIR}/external/llvm-project )
@@ -64,6 +96,8 @@ add_library( lart-runtime
     src/stash.cpp
     src/taint.cpp
 )
+
+add_library( lart::runtime ALIAS lart-runtime )
 
 target_include_directories( lart-runtime 
   PUBLIC

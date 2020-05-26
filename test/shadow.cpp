@@ -9,12 +9,12 @@
 #include <cstdlib>
 #include <iterator>
 
-using namespace __lart::runtime;
+using namespace __lart::runtime; // NOLINT
 
 namespace __lart::runtime
 {
     shadow_t peek( const void *addr );
-}
+} // namespace __lart::runtime
 
 TEST_CASE( "simple shadow", "[shadow]" )
 {
@@ -46,7 +46,7 @@ TEST_CASE( "simple shadow", "[shadow]" )
 
 TEST_CASE( "memory", "[shadow]" )
 {
-    auto arr = std::make_unique< char[] >( 5 );
+    std::array< char, 5 > arr = {};
 
     unsigned char val = 42;
     poke( &arr[ 3 ], 1, &val );
@@ -75,23 +75,23 @@ TEST_CASE( "interval peek", "[shadow]" )
         REQUIRE( i == expected.size() );
     };
 
-    constexpr std::size_t size = 10;
-    auto arr                   = std::make_unique< char[] >( size );
+    constexpr std::size_t size   = 10;
+    std::array< char, size > arr = {};
 
     SECTION( "empty interval" )
     {
         std::array expected = { P { nullptr, 0 } };
-        test( [ & ] { return peek( arr.get(), size ); }, expected );
+        test( [ & ] { return peek( arr.begin(), size ); }, expected );
     }
 
     auto a = std::make_unique< char >();
 
     SECTION( "single value at begin" )
     {
-        poke( arr.get(), 1, a.get() );
+        poke( arr.begin(), 1, a.get() );
 
         std::array expected = { P { a.get(), 0 }, P { nullptr, 1 } };
-        test( [ & ] { return peek( arr.get(), size ); }, expected );
+        test( [ & ] { return peek( arr.begin(), size ); }, expected );
     }
 
     SECTION( "single value in middle" )
@@ -99,7 +99,7 @@ TEST_CASE( "interval peek", "[shadow]" )
         poke( &arr[ 4 ], 1, a.get() );
 
         std::array expected = { P { nullptr, 0 }, P { a.get(), 4 }, P { nullptr, 5 } };
-        test( [ & ] { return peek( arr.get(), size ); }, expected );
+        test( [ & ] { return peek( arr.begin(), size ); }, expected );
     }
 
     SECTION( "single value at end" )
@@ -107,7 +107,7 @@ TEST_CASE( "interval peek", "[shadow]" )
         poke( &arr[ size - 1 ], 1, a.get() );
 
         std::array expected = { P { nullptr, 0 }, P { a.get(), 9 } };
-        test( [ & ] { return peek( arr.get(), size ); }, expected );
+        test( [ & ] { return peek( arr.begin(), size ); }, expected );
     }
 
     auto b = std::make_unique< char >();
@@ -122,7 +122,7 @@ TEST_CASE( "interval peek", "[shadow]" )
                                 P { nullptr, 5 },
                                 P { b.get(), 7 },
                                 P { nullptr, 8 } };
-        test( [ & ] { return peek( arr.get(), size ); }, expected );
+        test( [ & ] { return peek( arr.begin(), size ); }, expected );
     }
 
     SECTION( "overlap two values" )
@@ -135,6 +135,6 @@ TEST_CASE( "interval peek", "[shadow]" )
                                 P { b.get(), 4 },
                                 P { a.get(), 6 },
                                 P { nullptr, 7 } };
-        test( [ & ] { return peek( arr.get(), size ); }, expected );
+        test( [ & ] { return peek( arr.begin(), size ); }, expected );
     }
 }

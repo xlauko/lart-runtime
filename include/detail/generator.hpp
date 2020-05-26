@@ -28,11 +28,11 @@ namespace cppcoro
 
             generator< T > get_return_object() noexcept;
 
-            constexpr std::experimental::suspend_always initial_suspend() const
+            [[nodiscard]] constexpr std::experimental::suspend_always initial_suspend() const
             {
                 return {};
             }
-            constexpr std::experimental::suspend_always final_suspend() const
+            [[nodiscard]] constexpr std::experimental::suspend_always final_suspend() const
             {
                 return {};
             }
@@ -60,7 +60,7 @@ namespace cppcoro
 
             void return_void() {}
 
-            reference_type value() const noexcept
+            [[nodiscard]] reference_type value() const noexcept
             {
                 return static_cast< reference_type >( *m_value );
             }
@@ -77,7 +77,7 @@ namespace cppcoro
             }
 
         private:
-            pointer_type m_value;
+            pointer_type m_value = nullptr;
             std::exception_ptr m_exception;
         };
 
@@ -180,6 +180,8 @@ namespace cppcoro
             swap( other );
             return *this;
         }
+
+        generator &operator=( generator &&other ) noexcept = default;
 
         iterator begin()
         {

@@ -4,4 +4,4 @@
 
 #pragma once
 
-#define constructor __attribute__( ( constructor ) )
+#define constructor __attribute__( ( constructor ) ) // NOLINT

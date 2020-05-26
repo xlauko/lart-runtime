@@ -9,7 +9,7 @@
 #include <memory>
 #include <thread>
 
-using namespace __lart::runtime;
+using namespace __lart::runtime; // NOLINT
 
 TEST_CASE( "simple stash", "[stash]" )
 {

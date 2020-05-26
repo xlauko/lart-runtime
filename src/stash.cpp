@@ -7,4 +7,4 @@
 namespace __lart::runtime
 {
     thread_local stash_register_t stash_register = 0;
-}
+} // namespace __lart::runtime

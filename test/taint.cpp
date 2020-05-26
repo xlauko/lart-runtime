@@ -4,9 +4,10 @@
 
 #include "lart/taint.hpp"
 
+#include <array>
 #include <catch2/catch.hpp>
 
-using namespace __lart::runtime;
+using namespace __lart::runtime; // NOLINT
 
 TEST_CASE( "taint constant", "[taint]" )
 {
@@ -96,10 +97,10 @@ TEST_CASE( "structures", "[taint]" )
     SECTION( "address taken" )
     {
         pair< int > p { 10, t };
-        int *ptr = reinterpret_cast< int * >( &p );
+        int *ptr = reinterpret_cast< int * >( &p ); // NOLINT
 
-        REQUIRE_FALSE( is_tainted( ptr[ 0 ] ) );
-        REQUIRE( is_tainted( ptr[ 1 ] ) );
+        REQUIRE_FALSE( is_tainted( ptr[ 0 ] ) ); // NOLINT
+        REQUIRE( is_tainted( ptr[ 1 ] ) );       // NOLINT
     }
 }
 
@@ -107,12 +108,12 @@ TEST_CASE( "array", "[taint]" )
 {
     auto t = make_tainted( 2 );
 
-    int arr[ 10 ] = { 0 };
+    std::array< int, 10 > arr = {};
 
-    int idx    = 3;
-    arr[ idx ] = t;
+    std::size_t idx = 3;
+    arr[ idx ]      = t;
 
-    for ( int i = 0; i < 10; ++i )
+    for ( std::size_t i = 0; i < 10; ++i )
         if ( i == idx )
             REQUIRE( is_tainted( arr[ i ] ) );
         else
@@ -125,15 +126,14 @@ TEST_CASE( "union", "[taint]" )
 
     union
     {
-        int i;
-        long l;
-        char buff[ 8 ];
+        std::uint32_t i;
+        std::uint64_t l;
+        char buff[ 8 ]; // NOLINT
     } data {};
 
-    data.i = t;
-
-    REQUIRE( is_tainted( data.i ) );
-    REQUIRE( is_tainted( data.l ) );
-    REQUIRE( is_tainted( data.buff[ 3 ] ) );
-    REQUIRE_FALSE( is_tainted( data.buff[ 7 ] ) );
+    data.i = static_cast< std::uint32_t >( t );    // NOLINT
+    REQUIRE( is_tainted( data.i ) );               // NOLINT
+    REQUIRE( is_tainted( data.l ) );               // NOLINT
+    REQUIRE( is_tainted( data.buff[ 3 ] ) );       // NOLINT
+    REQUIRE_FALSE( is_tainted( data.buff[ 7 ] ) ); // NOLINT
 }

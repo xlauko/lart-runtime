@@ -3,6 +3,7 @@
 // found in the top-level directory of this distribution.
 
 #include "lart/taint.hpp"
+
 #include "utils.hpp"
 namespace __lart::runtime
 {
@@ -10,7 +11,7 @@ namespace __lart::runtime
 
     constructor void init_taint()
     {
-        taint = dfsan_create_label( "taint", 0 );
+        taint = dfsan_create_label( "taint", nullptr );
     }
 
 } // namespace __lart::runtime
