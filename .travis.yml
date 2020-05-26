@@ -47,6 +47,23 @@ before_install:
     export PATH=${DEPS_DIR}/cmake/bin:${PATH};
 
 install:
+  # Clang tooling
+  # Remove clang symlinks from the travis base install.
+  # The update-alternatives changes will not change the used clang version without this.
+  # /usr/local is searched for clang binaries before the /usr/bin direcory.
+  - sudo rm -rf /usr/local/clang-*
+  - sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-10 9999
+  - sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-10 9999
+  - sudo update-alternatives --install /usr/bin/clang-tidy clang-tidy /usr/bin/clang-tidy-10 9999
+
+  # Check if the right clang and clang-tidy is used
+  - update-alternatives --display clang
+  - update-alternatives --display clang++
+  - update-alternatives --display clang-tidy
+  - clang++ --version
+  - clang --version
+  - clang-tidy --version
+
   # Catch2
   - |
     cd "$DEPS_DIR";
