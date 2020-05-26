@@ -29,10 +29,11 @@ addons:
     packages:
       - cmake
       - clang-10
-      - libc++-dev
-      - libc++abi-dev
+      - clang-tidy-10
+      - libc++-10-dev
+      - libc++abi-10-dev
       - ninja-build
-      - clang-format
+      - clang-format-10
 
 before_install:
   - export DEPS_DIR="${HOME}/deps"
